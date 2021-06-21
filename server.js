@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bcrypt = require('bcryptjs');
 const cors = require('cors'); //No CORS is the default, so we use this package to enable CORS which we need to link our backend with our frontend
+const morgan = require('morgan');
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
@@ -16,18 +17,13 @@ if (process.env.NODE_ENV !== 'production') {
 //Knex is a package used to interact with a relational database
 const db = require('knex')({
     client: 'pg',
-    connection: {
-      host : '127.0.0.1',
-      user : 'postgres',
-      password : process.env.POSTGRES_PASSWORD,
-      database : 'img-recog'
-    }
-  });
+    connection: process.env.POSTGRES_URI
+});
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cors());
-
+app.use(morgan('combined'));
 app.get('/', (req, res) => res.json('home'));
 
 //Passing in db and bcrypt to our register controller file is called dependency injection
@@ -45,6 +41,9 @@ app.post('/imageurl', (req, res) => { image.handleApiCall(req, res) });
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server initiated on port ${PORT}.`)
+    if (Boolean(db.client.connectionSettings)) {
+      console.log('Database connected.');
+    }
 });
 
 /*
