@@ -8,8 +8,6 @@ services:
         working_dir: /usr/src/img-recog-api
         environment:
             POSTGRES_URI: postgres://img-recog:secret@postgres:5432/img-recog-docker
-        links:
-            - postgres
         ports:
             - "8080:8080"
         volumes:
