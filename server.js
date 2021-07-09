@@ -27,7 +27,7 @@ app.get('/', (req, res) => res.json('home'));
 
 //Passing in db and bcrypt to our register controller file is called dependency injection
 app.post('/signin', (req, res) => {
-  signin.handleSignin(req, res, db, bcrypt);
+  signin.handleAuthSignin(req, res, db, bcrypt);
 });
 
 app.post('/register', (req, res) => {
