@@ -8,6 +8,7 @@ const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const image = require('./controllers/image');
 const profile = require('./controllers/profile');
+const auth = require('./middleware/auth');
 
 //This just allows us to use our environment valuables in development mode
 if (process.env.NODE_ENV !== 'production') {
@@ -34,20 +35,20 @@ app.post('/register', (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
 });
 
-app.get('/profile/:id', (req, res) => {
+app.get('/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
 
-app.put('/profile/:id', (req, res) => {
+app.put('/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileUpdate(req, res, db);
 });
 
-app.put('/image', (req, res) => {
+app.put('/image', auth.requireAuth, (req, res) => {
   image.handleEntries(req, res, db);
 });
 
 //Moved Clarifai API to backend because otherwise our API key would be visible over the network
-app.post('/imageurl', (req, res) => {
+app.post('/imageurl', auth.requireAuth, (req, res) => {
   image.handleApiCall(req, res);
 });
 

@@ -40,9 +40,10 @@ module.exports.handleSignin = (req, res, db, bcrypt) => {
 
 const getAuthTokenId = (req, res) => {
   const { authorization } = req.headers;
+
   return redisClient.get(authorization.split(' ')[1], (err, reply) => {
     if (err || !reply) {
-      return res.status(400).json('Unauthorized.');
+      return res.status(401).json({ message: 'Unauthorized - Access Denied.' });
     }
     return res.json({ id: reply });
   });
@@ -69,7 +70,6 @@ const createSession = (user) => {
 
 module.exports.handleAuthSignin = (req, res, db, bcrypt) => {
   const { authorization } = req.headers;
-  const { email, password } = req.body;
 
   return authorization
     ? getAuthTokenId(req, res)
