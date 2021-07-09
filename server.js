@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const signout = require('./controllers/signout');
 const image = require('./controllers/image');
 const profile = require('./controllers/profile');
 const auth = require('./middleware/auth');
@@ -29,6 +30,10 @@ app.get('/', (req, res) => res.json('home'));
 //Passing in db and bcrypt to our register controller file is called dependency injection
 app.post('/signin', (req, res) => {
   signin.handleAuthSignin(req, res, db, bcrypt);
+});
+
+app.post('/signout', auth.requireAuth, (req, res) => {
+  signout.handleSignout(req, res);
 });
 
 app.post('/register', (req, res) => {
