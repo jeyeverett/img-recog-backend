@@ -1,3 +1,29 @@
+const jwt = require('jsonwebtoken');
+const redis = require('redis');
+
+// Setup Redis
+const redisClient = redis.createClient(process.env.REDIS_URI);
+
+const setToken = (key, value) => {
+  return Promise.resolve(redisClient.set(key, value));
+};
+
+const signToken = (email) => {
+  const jwtPayload = { email };
+  return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '2 days' });
+};
+
+const createSession = async (user) => {
+  const { email, id } = user;
+  const token = signToken(email);
+  await setToken(token, id);
+  return {
+    user: { ...user },
+    success: 'true',
+    token,
+  };
+};
+
 module.exports.handleRegister = (req, res, db, bcrypt) => {
   const { name, email, password } = req.body;
 
@@ -41,7 +67,10 @@ module.exports.handleRegister = (req, res, db, bcrypt) => {
             joined: new Date(),
           })
           .then((user) => {
-            res.json([user[0], { success: true }]);
+            return createSession(user[0]);
+          })
+          .then((data) => {
+            return res.status(200).json(data);
           });
       })
       .then(trx.commit) //we have to commit the transaction at the end

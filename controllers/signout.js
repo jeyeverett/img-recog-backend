@@ -9,7 +9,6 @@ module.exports.handleSignout = (req, res) => {
 
   redisClient.get(authorization.split(' ')[1], (err, reply) => {
     if (err || !reply) {
-      console.log('error or no reply');
       return res.status(401).json({ message: 'Unauthorized - Access Denied.' });
     } else if (Number(reply) === Number(id)) {
       redisClient.del(authorization.split(' ')[1], (err, reply) => {

@@ -79,7 +79,7 @@ module.exports.handleAuthSignin = (req, res, db, bcrypt) => {
             ? createSession(user)
             : signInError(400, 'Error signing in.');
         })
-        .then((session) => res.json(session))
+        .then((session) => res.status(200).json(session))
         .catch((err) =>
           res.status(err.status || 400).json(err.message || 'Sign in failed.')
         );
